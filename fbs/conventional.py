@@ -42,7 +42,7 @@ def compute_overall_frf(possible_Y, indices, f):
     
     # 2. compute g=BYf
     m = N - 1  # number of interfaces/blocks in the tridiagonal system
-    g = np.concatenate(np.diff(Yf,axis=0))
+    g = -np.concatenate(np.diff(Yf,axis=0))
 
     # 3. solve for lam = (B*Y*B.T)^-1 * B*Y*f
     B=np.block([[np.zeros((n,n)) for j in range(i)]+[np.eye(n),-np.eye(n)]+[np.zeros((n,n)) for j in range(i+2,m)] for i in range(m)])
