@@ -30,9 +30,14 @@ def get_block_receptances_at_frequency(frequency:float,nominal_receptance:ArrayL
     return Y
 
 n=3#degrees of freedom in each unit cell
-nominal_receptance=np.diag([0.75,0.85,0.95])
-config1=[(1000,3000,np.diag(n*[0.5]))]#config 1 has a notch around one frequency
-config2=[(4500,5500,np.diag(n*[0.5]))]#config 2 has a notch containing the other frequency
+nominal_receptance=np.array([[0.75,0.25,0.05],
+                             [0.25,0.85,0.25],
+                             [0.05,0.25,0.95]])
+gap_receptance=np.array([[0.50,0.25,0.05],
+                         [0.25,0.50,0.25],
+                         [0.05,0.25,0.50]])
+config1=[(1000,3000,gap_receptance)]#config 1 has a notch around one frequency
+config2=[(4500,5500,gap_receptance)]#config 2 has a notch containing the other frequency
 target_frequencies=[2000,5000]
 Yis_by_freq=[get_block_receptances_at_frequency(f,nominal_receptance,[config1,config2]) for f in target_frequencies]
 N=72
