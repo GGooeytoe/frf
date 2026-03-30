@@ -29,13 +29,15 @@ def get_block_receptances_at_frequency(frequency:float,nominal_receptance:ArrayL
         Y.append(Yi)
     return Y
 
+seed=10
+num_random_cases=5
 n=3#degrees of freedom in each unit cell
-nominal_receptance=np.array([[0.75,0.25,0.05],
-                             [0.25,0.85,0.25],
-                             [0.05,0.25,0.95]])
-gap_receptance=np.array([[0.50,0.25,0.05],
-                         [0.25,0.50,0.25],
-                         [0.05,0.25,0.50]])
+nominal_receptance=np.array([[0.75,0.50,0.25],
+                             [0.50,0.85,0.50],
+                             [0.25,0.50,0.95]])
+gap_receptance=np.array([[0.50,0.50,0.25],
+                         [0.50,0.50,0.50],
+                         [0.25,0.50,0.50]])
 config1=[(1000,3000,gap_receptance)]#config 1 has a notch around one frequency
 config2=[(4500,5500,gap_receptance)]#config 2 has a notch containing the other frequency
 target_frequencies=[2000,5000]
@@ -43,15 +45,19 @@ Yis_by_freq=[get_block_receptances_at_frequency(f,nominal_receptance,[config1,co
 N=72
 excitation=np.array([1 for _ in range(n)]+[0 for _ in range(n*(N-1))])#unit excitation on each DOF of first cell, zero elsewhere
 
+rng=np.random.default_rng(seed)
+
 thomas_start=default_timer()
 ufromstart=[]
 ufromend=[]
 uspaced=[]
+urandom=[]
 for i,freq in enumerate(target_frequencies):
     Yis=Yis_by_freq[i]
     ufromstarti=[]
     ufromendi=[]
     uspacedi=[]
+    urandomi=[]
     for num_switched in range(N):
         #switch from the leading edge
         recipe=[1]*num_switched+[0]*(N-num_switched)
@@ -78,15 +84,27 @@ for i,freq in enumerate(target_frequencies):
             for j in range(num_switched):
                 recipe[(j+1)*stride]=1
         uspacedi.append(block_thomas.compute_overall_frf(Yis,recipe,excitation))
+
+        #switch random cells
+        urandomik=[]
+        for k in range(num_random_cases):
+            recipe=[0]*N
+            switched=rng.choice(N,num_switched,False)
+            for j in switched:
+                recipe[j]=1
+            urandomik.append(block_thomas.compute_overall_frf(Yis,recipe,excitation))
+        urandomi.append(urandomik)
     ufromstart.append(ufromstarti)
     ufromend.append(ufromendi)
     uspaced.append(uspacedi)
+    urandom.append(urandomi)
 thomas_end=default_timer()
 print(f"{N} unit cells, {n} cell DOF, {len(target_frequencies)} frequencies, Thomas={thomas_end-thomas_start:.4f}s")
 
 ufromstart=np.array(ufromstart)
 ufromend=np.array(ufromend)
 uspaced=np.array(uspaced)
+urandom=np.array(urandom)
 fig=pyplot.figure()
 axes=fig.subplots(len(target_frequencies),n,sharex=True,sharey=True)
 for i,freq in enumerate(target_frequencies):
@@ -94,6 +112,8 @@ for i,freq in enumerate(target_frequencies):
         axes[i,j].plot(range(N),ufromstart[i,:,j],":o",label=f"Switch from Start")
         axes[i,j].plot(range(N),ufromend[i,:,j],":o",label=f"Switch from End")
         axes[i,j].plot(range(N),uspaced[i,:,j],":o",label=f"Space Switches Evenly")
+        for k in range(num_random_cases):
+            axes[i,j].plot(range(N),urandom[i,:,j,k],":o",label=f"Space Switches Randomly {k}")
     axes[i,0].set_ylabel(f"Gain (Freq={freq})")
 for j in range(n):
     axes[0,j].set_title(f"DOF={j}")
