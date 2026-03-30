@@ -32,12 +32,12 @@ def get_block_receptances_at_frequency(frequency:float,nominal_receptance:ArrayL
 seed=10
 num_random_cases=5
 n=3#degrees of freedom in each unit cell
-nominal_receptance=np.array([[0.75,0.50,0.25],
-                             [0.50,0.85,0.50],
-                             [0.25,0.50,0.95]])
-gap_receptance=np.array([[0.50,0.50,0.25],
-                         [0.50,0.50,0.50],
-                         [0.25,0.50,0.50]])
+nominal_receptance=np.array([[0.75,0.15,0.05],
+                             [0.15,0.85,0.15],
+                             [0.05,0.15,0.95]])
+gap_receptance=np.array([[0.50,0.15,0.05],
+                         [0.15,0.50,0.15],
+                         [0.05,0.15,0.50]])
 config1=[(1000,3000,gap_receptance)]#config 1 has a notch around one frequency
 config2=[(4500,5500,gap_receptance)]#config 2 has a notch containing the other frequency
 target_frequencies=[2000,5000]
