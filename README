@@ -1,1 +1,15 @@
-"# frf" 
+# frf 
+Implementation of Frequency Based Substructuring of a series of elements aligned end-to-end. In this very special case, the matrix inversion can be handled via the Block Thomas algorithm to speed up over conventional/generic methods.
+
+The fbs folder contains the implementation using the Block Thomas algorithm (block_thomas.py) and the generic (dense) matrix inversion (conventional.py).
+
+Usage examples are in the scripts folder.
+
+The key function is compute_overall_frf, implemented in conventional.py and block_thomas.py with identical arguments and returns but different internals. 
+You provide a list of the receptance matrices for each of the types of unit cell, then specify for each cell in the structure which of those receptance matrices it has. Finally, you provide the excitation vector. This returns the response vector.
+To handle multiple frequencies, call the function multiple times with the unit cell receptances and excitation amplitudes for each frequency.
+
+# Dependencies
+-numpy
+-scipy
+-matplotlib
