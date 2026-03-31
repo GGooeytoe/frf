@@ -4,7 +4,7 @@ import scipy
 def compute_overall_frf(possible_Y, indices, f):
     """
     Computes the overall frequency response vector u using Frequency Based 
-    Substructuring (FBS) and generic Cholesky factorization.
+    Substructuring (FBS) and generic LU factorization.
     
     Parameters:
     possible_Y : list of np.ndarray
